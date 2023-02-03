@@ -1,0 +1,33 @@
+global:
+  scrape_interval: 15s  # Por padrão, o alvo será 'raspado' a cada 15 segundos
+
+# Carrega arquivo de regras de alertas
+rule_files:
+  - "alert.rules"
+
+scrape_configs:
+
+  - job_name: 'prometheus'
+
+    # Esse valor irá sobreescrever o valor padrão global para esse alvo
+    scrape_interval: 5s
+
+    metrics_path: /metrics # Endpoint padrão para a raspagem das métricas
+    static_configs:
+      - targets: ['localhost:9090']
+        labels:
+          alias: prometheus-local
+
+  - job_name: node_exporter
+    scrape_interval: 5s
+    static_configs:
+      - targets: ['node_exporter:9100']
+        labels:
+          alias: webserver
+
+alerting:
+  alertmanagers:
+  - scheme: http
+    static_configs:
+    - targets: 
+      - 'alertmanager:9093'

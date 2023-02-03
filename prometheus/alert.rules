@@ -1,0 +1,22 @@
+groups:
+
+# Grupo de alertas: hosts
+- name: hosts
+  rules:
+  - alert: Uptime
+    expr: up == 0
+    for: 15s
+    labels:
+      severity: critical
+    annotations:
+      summary: "O servidor {{ $labels.alias }} está offline!"
+      description: "O servidor {{ $labels.alias }} parou de responder."
+
+  - alert: Uso de CPU
+    expr: 100 - (avg(rate(node_cpu_seconds_total{mode="idle"}[2m])) by(instance) * 100) > 80
+    for: 1m
+    labels:
+      severity: warning
+    annotations:
+      summary: Consumo alto de CPU (instance {{ $labels.instance }})
+      description: "O servidor {{ $labels.alias }} está com o consumo de CPU acima de 80%\n  VALUE = {{ $value }}\n  LABELS = {{ $labels }}"
